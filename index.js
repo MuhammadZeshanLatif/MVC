@@ -13,77 +13,63 @@ server.use(morgan('default'))
 server.use(express.static('public'));
 server.use(express.json())
 
-
-//API -Endpoint -Roite
-
-//Product
-
-// API ROOT=>product
-//Base URL, google.com/api/vs OR localhost etc
-
-//Read GET/Product ==> can call by two method
-
-  //First complete
-server.get('/products',(req,res)=>{
+const startServer=(req,res)=>
+{
+    res.send("Server start....")
+}
+const getAllProducts=(req,res)=>{
     res.json(data);
-}); 
-
-
-
-
-//CRUD operation
-
-// 1):-Create
-
-server.post('/products',(req,res)=>{
+}
+const getProducts=(req,res)=>{
     console.log(req.body);
     data.push(req.body);
     res.status(201).json({type:'POST'});
-});
-
-
-
-
-// 2):-Read
-////Second by makeing route of individual product
-server.get('/products/:id',(req,res)=>{
+}
+const getSingleProduct=(req,res)=>{
     const id = +req.params.id;
     console.log("these :"+req.params.id);
     //const product=data.find(p=>p.id===id)
     const product=data.find(p=>p.id===id)
     res.status(200).json(product);
-});
-
-// 3):- Update 
-//There are two methods for update data
-//i) put
-//In put we override data
- server.put('/products/:id',(req,res)=>{
+}
+const replaceProduct =(req,res)=>{
     const id = +req.params.id;
     const productIndex = data.findIndex(p=>p.id===id);
     data.splice(productIndex,1,{...req.body,id:id});
     res.status(201).json()
- })
-//ii)Patch ==> most recommended
-// in patch we only modify the individual properties
-server.patch('/products/:id',(req,res)=>{
+ }
+ const updateProduct=(req,res)=>{
     const id = +req.params.id;
     const productIndex = data.findIndex(p=>p.id===id);
     const singleProduct=data[productIndex]
     data.splice(productIndex,1,{...singleProduct,...req.body});
     res.status(201).json()
-});
-
-server.delete('/products/:id',(req,res)=>{
+}
+const deleteProduct=(req,res)=>{
     const id = +req.params.id;
     const productIndex = data.findIndex(p=>p.id===id);
     const singleProduct=data[productIndex];
     data.splice(productIndex,1);
     res.status(201).json('Product delete :'+singleProduct);
-});
+}
 
-server.get('/demo',(req,res)=>
-{
-    res.send("Server start....")
-});
+//Crud
+//1)Create 
+server.post('/products',getProducts);
+//2)Read
+//Read all product
+server.get('/products',getAllProducts);
+//Read Single Product 
+server.get('/products/:id',getSingleProduct);
+//3)Update
+//Update full product
+server.put('/products/:id',replaceProduct);
+//Update individual property
+server.patch('/products/:id',updateProduct);
+//4)Deleta
+server.delete('/products/:id',deleteProduct);
+
+
+//Server start
+server.get('/demo',startServer);
 server.listen(8080)
